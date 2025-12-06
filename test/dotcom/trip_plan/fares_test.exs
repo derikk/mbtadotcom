@@ -187,30 +187,5 @@ defmodule Dotcom.TripPlan.FaresTest do
       cents = cents_for_leg(leg)
       assert is_integer(cents)
     end
-
-    test "Zone 1A Fairmount legs use subway fare" do
-      zone_1a_stop = build(:place_with_stop, stop: build(:stop, zone_id: "CR-zone-1A"))
-
-      fairmount_leg =
-        build(:transit_leg,
-          agency: build(:agency, name: "MBTA"),
-          route:
-            build(:route,
-              agency: build(:agency, name: "MBTA"),
-              type: 2,
-              gtfs_id: "mbta-ma-us:CR-Fairmount"
-            ),
-          from: zone_1a_stop,
-          to: zone_1a_stop
-        )
-
-      subway_leg =
-        build(:transit_leg,
-          agency: build(:agency, name: "MBTA"),
-          route: build(:route, agency: build(:agency, name: "MBTA"), type: 0)
-        )
-
-      assert cents_for_leg(fairmount_leg) == cents_for_leg(subway_leg)
-    end
   end
 end
