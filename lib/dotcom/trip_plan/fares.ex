@@ -90,17 +90,23 @@ defmodule Dotcom.TripPlan.Fares do
   def cents_for_leg(_), do: 0
 
   defp fare_filter_for_route(route, from, to) when route.type == 2 do
-    if mbta_id(route) == "CR-Foxboro" do
-      [name: :foxboro, duration: :round_trip]
-    else
-      from_zone = mbta_zone_id(from.stop)
-      to_zone = mbta_zone_id(to.stop)
+    cond do
+      mbta_id(route) == "CR-Foxboro" ->
+        [name: :foxboro, duration: :round_trip]
 
-      if is_binary(from_zone) and is_binary(to_zone) do
-        [name: Fares.calculate_commuter_rail(from_zone, to_zone)]
-      else
-        [mode: :commuter_rail]
-      end
+      mbta_id(route) == "CR-Fairmount" and
+          mbta_zone_id(from.stop) == "1A" and mbta_zone_id(to.stop) == "1A" ->
+        [mode: :subway]
+
+      true ->
+        from_zone = mbta_zone_id(from.stop)
+        to_zone = mbta_zone_id(to.stop)
+
+        if is_binary(from_zone) and is_binary(to_zone) do
+          [name: Fares.calculate_commuter_rail(from_zone, to_zone)]
+        else
+          [mode: :commuter_rail]
+        end
     end
   end
 
